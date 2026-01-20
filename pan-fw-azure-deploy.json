@@ -58,6 +58,13 @@
       "type": "string",
       "defaultValue": "10.255.253.0/24"
     },
+    "subnet0StartAddress": {
+      "type": "string",
+      "defaultValue": "10.255.255.4",
+      "metadata": {
+        "description": "Management subnet static address"
+      }
+    },
     "adminUsername": {
       "type": "string"
     },
@@ -133,9 +140,6 @@
             "name": "[parameters('subnet0Name')]",
             "properties": {
               "addressPrefix": "[parameters('subnet0Prefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
-              }
             }
           },
           {
@@ -167,9 +171,13 @@
           {
             "name": "ipconfig-mgmt",
             "properties": {
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('subnet0StartAddress')]",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnet0Name'))]"
+              },
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
               },
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]"
