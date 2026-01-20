@@ -18,6 +18,13 @@
       "type": "string",
       "defaultValue": "PAN-FW01"
     },
+    "zone": {
+      "type": "string",
+      "defaultValue": "None",
+      "metadata": {
+        "description": "Availability Zone for VM-Series"
+      }
+    },
     "imageVersion": {
       "type": "string",
       "defaultValue": "latest"
@@ -83,7 +90,10 @@
     "nicPrefix": "[concat(parameters('vmName'), '-')]",
     "mgmtNic": "[concat(variables('nicPrefix'), 'MGMT-eth0')]",
     "extNic": "[concat(variables('nicPrefix'), 'EXT-eth1')]",
-    "intNic": "[concat(variables('nicPrefix'), 'INT-eth2')]"
+    "intNic": "[concat(variables('nicPrefix'), 'INT-eth2')]",
+    "zones": [
+      "[parameters('zone')]"
+    ]
   },
   "resources": [
     {
@@ -91,6 +101,7 @@
       "apiVersion": "2019-11-01",
       "name": "[parameters('publicIPAddressName')]",
       "location": "[parameters('location')]",
+      "zones": "[variables('zones')]",
       "sku": {
         "name": "Standard"
       },
@@ -164,22 +175,20 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('subnet0StartAddress'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('nsgName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
       ],
       "properties": {
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+        },
         "ipConfigurations": [
           {
             "name": "ipconfig-mgmt",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('subnet0StartAddress')]",
+               "privateIPAddress": "[parameters('subnet0StartAddress')]",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnet0Name'))]"
-              },
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
               },
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]"
@@ -279,14 +288,21 @@
               }
             },
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('extNic'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('extNic'))]",
+              "properties": {
+                "primary": false
+              }
             },
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('intNic'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('intNic'))]",
+              "properties": {
+                "primary": false
+              }
             }
           ]
         }
-      }
+      },
+      "zones": "[if(equals(parameters('zone'), 'None'), json('null'), variables('zones'))]"
     }
   ]
 }
