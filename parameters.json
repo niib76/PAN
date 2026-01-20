@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "[resourceGroup().location]"
+    },
+    "srcIPInboundNSG": {
+      "value": "0.0.0.0/0"
+    },
+    "nsgName": {
+      "value": "NSG-PAN-FW0x-MGMT"
+    },
+    "customData": {
+      "value": "storage-account=None,access-key=None,file-share=None,share-directory=None"
+    },
+    "vmName": {
+      "value": "PAN-FW0x"
+    },
+    "imageVersion": {
+      "value": "latest"
+    },
+    "vmSize": {
+      "value": "Standard_DS3_v2"
+    },
+    "virtualNetworkName": {
+      "value": "VNET-PAN-FWs"
+    },
+    "vnetNewOrExisting": {
+      "value": "existing"
+    },
+    "virtualNetworkAddressPrefix": {
+      "value": "10.255.252.0/22"
+    },
+    "virtualNetworkExistingRGName": {
+      "value": "RG-PAN-LAB"
+    },
+    "subnet0Name": {
+      "value": "SUB-PAN-MGMT"
+    },
+    "subnet1Name": {
+      "value": "SUB-PAN-EXT"
+    },
+    "subnet2Name": {
+      "value": "SUB-PAN-INT"
+    },
+    "subnet0Prefix": {
+      "value": "10.255.255.0/24"
+    },
+    "subnet1Prefix": {
+      "value": "10.255.252.0/24"
+    },
+    "subnet2Prefix": {
+      "value": "10.255.253.0/24"
+    },
+    "authenticationType": {
+      "value": "password"
+    },
+    "adminUsername": {
+      "value": "myadmin"
+    },
+    "adminPassword": {
+      "value": ""
+    },
+    "adminSshKey": {
+      "value": null
+    },
+    "publicIPNewOrExisting": {
+      "value": "existing"
+    },
+    "publicIPRGName": {
+      "value": "RG-PAN-LAB"
+    },
+    "publicIPAddressName": {
+      "value": "PIP-PAN-FW0x-MGMT"
+    },
+    "publicIPAllocationMethod": {
+      "value": "Static"
+    },
+    "bootstrap": {
+      "value": "no"
+    },
+    "zone": {
+      "value": "1"
+    },
+    "availabilitySetName": {
+      "value": "None"
+    },
+    "availabilitySetPlatformFaultDomainCount": {
+      "value": "2"
+    },
+    "availabilitySetPlatformUpdateDomainCount": {
+      "value": "5"
+    }
+  }
+}
