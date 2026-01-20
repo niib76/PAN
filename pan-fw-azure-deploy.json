@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.3",
+  "contentVersion": "1.0.0.4",
   "parameters": {
     "location": {
       "type": "string",
@@ -66,7 +66,7 @@
     },
     "publicIPAddressName": {
       "type": "string",
-      "defaultValue": "pip-pan-fw01-mgmt"
+      "defaultValue": "PIP-PAN-FW-01-MGMT"
     }
   },
   "variables": {
@@ -81,22 +81,25 @@
   "resources": [
     {
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-11-01",
       "name": "[parameters('publicIPAddressName')]",
       "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
       "properties": {
-        "publicIPAllocationMethod": "Dynamic"
+        "publicIPAllocationMethod": "Static"
       }
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-11-01",
       "name": "[parameters('nsgName')]",
       "location": "[parameters('location')]",
       "properties": {
         "securityRules": [
           {
-            "name": "Allow-Outside",
+            "name": "Allow-Mgmt-From-Source",
             "properties": {
               "priority": 100,
               "access": "Allow",
@@ -113,7 +116,7 @@
     },
     {
       "type": "Microsoft.Network/virtualNetworks",
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-11-01",
       "name": "[parameters('virtualNetworkName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
@@ -152,7 +155,7 @@
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-11-01",
       "name": "[variables('mgmtNic')]",
       "location": "[parameters('location')]",
       "dependsOn": [
@@ -162,8 +165,9 @@
       "properties": {
         "ipConfigurations": [
           {
-            "name": "ipconfig1",
+            "name": "ipconfig-mgmt",
             "properties": {
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnet0Name'))]"
               },
@@ -177,7 +181,7 @@
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-11-01",
       "name": "[variables('extNic')]",
       "location": "[parameters('location')]",
       "dependsOn": [
@@ -187,8 +191,9 @@
         "enableIPForwarding": true,
         "ipConfigurations": [
           {
-            "name": "ipconfig1",
+            "name": "ipconfig-untrust",
             "properties": {
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnet1Name'))]"
               }
@@ -199,7 +204,7 @@
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2017-10-01",
+      "apiVersion": "2019-11-01",
       "name": "[variables('intNic')]",
       "location": "[parameters('location')]",
       "dependsOn": [
@@ -209,8 +214,9 @@
         "enableIPForwarding": true,
         "ipConfigurations": [
           {
-            "name": "ipconfig1",
+            "name": "ipconfig-trust",
             "properties": {
+              "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnet2Name'))]"
               }
@@ -221,7 +227,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2018-06-01",
+      "apiVersion": "2019-12-01",
       "name": "[parameters('vmName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
@@ -258,7 +264,9 @@
           "networkInterfaces": [
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('mgmtNic'))]",
-              "properties": { "primary": true }
+              "properties": {
+                "primary": true
+              }
             },
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('extNic'))]"
