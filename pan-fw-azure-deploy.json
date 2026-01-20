@@ -164,7 +164,9 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('subnet0StartAddress'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('nsgName'))]"
       ],
       "properties": {
         "ipConfigurations": [
