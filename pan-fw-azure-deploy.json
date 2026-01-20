@@ -139,7 +139,7 @@
           {
             "name": "[parameters('subnet0Name')]",
             "properties": {
-              "addressPrefix": "[parameters('subnet0Prefix')]",
+              "addressPrefix": "[parameters('subnet0Prefix')]"
             }
           },
           {
