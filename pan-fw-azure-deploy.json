@@ -97,14 +97,14 @@
     },
     "virtualNetworkAddressPrefix": {
       "type": "string",
-      "defaultValue": "",
+      "defaultValue": "10.255.252.0/22",
       "metadata": {
         "description": "Virtual network address CIDR"
       }
     },
     "virtualNetworkExistingRGName": {
       "type": "string",
-      "defaultValue": "10.255.252.0/22",
+      "defaultValue": "",
       "metadata": {
         "description": "Name of resource group of existing VNET (if applicable)"
       }
